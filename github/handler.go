@@ -38,4 +38,5 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("wh = %+v\n", wh)
+	log.Printf("msg = %s\n", wh.Commits[0].Message)
 }
