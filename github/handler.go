@@ -9,13 +9,13 @@ import (
 )
 
 type Commit struct {
-	Id  string
-	Url string
+	Id      string `json:"id"`
+	Message string `json:"message"`
+	Url     string `json:"url"`
 }
 
 type Webhook struct {
 	Ref        string `json:"ref"`
-	Id         string `json:"id"`
 	Commits    []Commit
 	Repository struct {
 		Name           string `json:"name"`
@@ -31,12 +31,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	var b bytes.Buffer
-	err = json.Indent(&b, hook.Payload, "", "\t")
-	if err != nil {
-		log.Println("JSON parse error: ", err)
+	wh := new(Webhook)
+	decoder := json.NewDecoder(bytes.NewReader(hook.Payload))
+	if err := decoder.Decode(wh); err != nil {
+		http.Error(w, err.Error(), 500)
 		return
 	}
-
-	log.Printf("---\n %s \n", b.Bytes())
+	log.Printf("wh = %+v\n", wh)
 }
